@@ -8,7 +8,16 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get("/quiz").then(res => setQuizzes(res.data));
+    API.get("/quiz").then(res => {
+      const validQuizzes = res.data.filter(quiz =>
+        quiz.title && quiz.title.toString().trim() &&
+        quiz.category && quiz.category.toString().trim()
+      );
+      const uniqueQuizzes = validQuizzes.filter((quiz, index, self) =>
+        self.findIndex(item => item._id === quiz._id) === index
+      );
+      setQuizzes(uniqueQuizzes);
+    });
   }, []);
 
   return (

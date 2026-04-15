@@ -14,7 +14,17 @@ exports.createQuiz = async (req, res) => {
 exports.getQuizzes = async (req, res) => {
   try {
     const quizzes = await Quiz.find();
-    res.json(quizzes);
+    const filteredQuizzes = quizzes.filter(quiz =>
+      quiz.title && quiz.title.toString().trim() &&
+      quiz.category && quiz.category.toString().trim()
+    );
+    const uniqueQuizzes = filteredQuizzes.filter((quiz, index, self) =>
+      self.findIndex(q =>
+        q.title.toString().trim() === quiz.title.toString().trim() &&
+        q.category.toString().trim() === quiz.category.toString().trim()
+      ) === index
+    );
+    res.json(uniqueQuizzes);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
